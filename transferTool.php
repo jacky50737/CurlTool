@@ -73,12 +73,16 @@ try {
 }
 
 
-#[ArrayShape(["ok" => "", "message" => ""])] function json_msg($status, $message): array
+#[ArrayShape(["ok" => "", "message" => ""])] 
+
+function json_msg($status, $message): array
 {
     return array("ok" => $status, "message" => $message);
 }
 
-#[NoReturn] function sand_msg($json)
+#[NoReturn] 
+
+function sand_msg($json)
 {
     $response = json_encode($json);
     echo $response;
