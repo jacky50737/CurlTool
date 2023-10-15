@@ -27,7 +27,7 @@ if (empty(json_decode(file_get_contents('php://input'), true))) {
 $data = json_decode(file_get_contents('php://input'), true);
 
 //密碼判斷
-if (empty($data['PASSWORD']) or $data['PASSWORD'] != 'a8508123') {
+if (empty($data['PASSWORD']) or $data['PASSWORD'] != 'a123456789') {
     $status = "錯誤";
     $message = "密碼錯誤";
     sand_msg(json_msg($status, $message));
