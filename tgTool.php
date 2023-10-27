@@ -29,7 +29,7 @@ if (!file_exists('tg_setting.json')) {
             ],
         ],
         "adminAccount"=>[
-            "jacky"=>
+            "Jacky"=>
             [
                 "id"=>1,
                 "name"=>"Jacky",
@@ -81,10 +81,11 @@ try {
         // 取得更新
         $magResults = $curl->doGet("https://api.telegram.org/bot".$botAccount['accountToken']."/getUpdates?offset=".$botAccount['update_id']."&limit=100&timeout=10");
         $count = count($magResults->result)??0;
+        save_log("INFO", "共有".$count."筆訊息");
         if($count){
             foreach($magResults->result as $msg){
                 // 判斷是否為管理員Jacky的訊息
-                if(strval($msg->message->from->id) == $file['adminAccount']['jacky']['chat_id']){
+                if(strval($msg->message->from->id) == $file['adminAccount']['Jacky']['chat_id']){
                     $tmpData = [];
                     // 判斷是否為message_id
                     if(isset($msg->message->message_id)){
@@ -132,6 +133,56 @@ try {
                         ];
                     }
                 }
+                // 判斷是否為管理員Ming的訊息
+                if(strval($msg->message->from->id) == $file['adminAccount']['Ming']['chat_id']){
+                    $tmpData = [];
+                    // 判斷是否為message_id
+                    if(isset($msg->message->message_id)){
+                        $tmpData['message_id'] = $msg->message->message_id;
+                    }
+
+                    // 判斷是否為文字訊息
+                    if(isset($msg->message->text)){
+                        $tmpData['text'] = $msg->message->text;
+                    }
+
+                    // 判斷是否為圖片訊息
+                    if(isset($msg->message->photo)){
+                        $tmpData['photo'] = $msg->message->photo;
+                    }
+
+                    // 判斷是否為檔案訊息
+                    if(isset($msg->message->document)){
+                        $tmpData['document'] = $msg->message->document;
+                    }
+
+                    // 判斷是否為影片訊息
+                    if(isset($msg->message->video)){
+                        $tmpData['video'] = $msg->message->video;
+                    }
+
+                    // 判斷是否為聲音訊息
+                    if(isset($msg->message->voice)){
+                        $tmpData['voice'] = $msg->message->voice;
+                    }
+
+                    // 判斷是否為影片caption
+                    if(isset($msg->message->caption)){
+                        $tmpData['caption'] = $msg->message->caption;
+                    }
+
+                    // 判斷是否有media_group_id
+                    if(isset($msg->message->media_group_id)){
+                        $tmpData['media_group_id'] = $msg->message->media_group_id;
+                    }
+
+                    if(isset($msg->message->forward_date)){
+                        $result[$botAccount['name']."(".$botAccount['id'].")"]["Ming"]["msgs"][] = [
+                            "msg" => $tmpData
+                        ];
+                    }
+                }
+
                 $last_update_id = $msg->update_id;
             }
 
@@ -163,6 +214,37 @@ try {
             // 計算Jacky的Group訊息數量
             $result[$botAccount['name']."(".$botAccount['id'].")"]["Jacky"]["gruoup_count"] = count($gruoup??[]);
 
+
+            $gruoup = [];
+            $onGroup = [];
+            // 將有相同media_group_id的訊息放入$gruoup
+            foreach ($result[$botAccount['name']."(".$botAccount['id'].")"]["Ming"]["msgs"] as $msg){
+                if(isset($msg['msg']['media_group_id'])){
+                    // 判斷是否已經有media_group_id
+                    $gruoup[$msg['msg']['media_group_id']][] = $msg;
+                    // 紀錄massage_id
+                    $onGroup[] = $msg['msg']['message_id'];
+                }
+            }
+
+            // 將以放入$gruoup的訊息從$magResults->result [Ming]中移除
+            foreach ($result[$botAccount['name']."(".$botAccount['id'].")"]["Ming"]["msgs"] as $key => $msg){
+                if(in_array($msg['msg']['message_id'], $onGroup)){
+                    unset($result[$botAccount['name']."(".$botAccount['id'].")"]["Ming"]["msgs"][$key]);
+                }
+            }
+
+            // 計算Ming的訊息數量
+            $result[$botAccount['name']."(".$botAccount['id'].")"]["Ming"]["count"] = count($result[$botAccount['name']."(".$botAccount['id'].")"]["Ming"]["msgs"]??[]);
+            if(!empty($gruoup)){
+                $result[$botAccount['name']."(".$botAccount['id'].")"]["Ming"]["gruoup"] = $gruoup;
+            }
+
+            // 計算Ming的Group訊息數量
+            $result[$botAccount['name']."(".$botAccount['id'].")"]["Ming"]["gruoup_count"] = count($gruoup??[]);
+
+
+
             $result[$botAccount['name']."(".$botAccount['id'].")"]["All"] = [
                 "start_update_id"=> $botAccount['update_id'], 
                 "count"=> $count,
@@ -185,7 +267,7 @@ try {
                     ],
                 ],
                 "adminAccount"=>[
-                    "jacky"=>
+                    "Jacky"=>
                     [
                         "id"=>1,
                         "name"=>"Jacky",
@@ -196,8 +278,8 @@ try {
                     [
                         "id"=>2,
                         "name"=>"Ming",
-                        "chat_id"=>"1129399459",
-                        "traget_chat_id"=>"1129399459",
+                        "chat_id"=>"5699809960",
+                        "traget_chat_id"=>"5699809960",
                     ],
                 ],
                 "botAccount"=>[
@@ -252,7 +334,7 @@ try {
                         ];
                     }
                     // 發送訊息
-                    sendMediaGroup($file['botAccount'][0]['accountToken'], $file['adminAccount']['jacky']['traget_chat_id'], $medias);
+                    sendMediaGroup($file['botAccount'][0]['accountToken'], $file['adminAccount']['Jacky']['traget_chat_id'], $medias);
                 }
 
                 foreach ($adminAccount['gruoup'] as $groupKey => $group){
@@ -288,7 +370,7 @@ try {
                         }
                     }
                     // 發送訊息
-                    sendMediaGroup($file['botAccount'][0]['accountToken'], $file['adminAccount']['jacky']['traget_chat_id'], $medias);
+                    sendMediaGroup($file['botAccount'][0]['accountToken'], $file['adminAccount']['Jacky']['traget_chat_id'], $medias);
                 }
             }
 
@@ -374,6 +456,7 @@ try {
         "result" => $result,
     ];
     sand_msg(json_msg($status, $message, $data));
+    save_log("INFO", "檢查完成!");
 }catch (Exception $exception){
     $status = "失敗";
     $message = $exception->getMessage();
