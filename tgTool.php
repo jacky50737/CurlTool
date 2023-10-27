@@ -126,7 +126,7 @@ try {
                         $tmpData['media_group_id'] = $msg->message->media_group_id;
                     }
 
-                    if(isset($msg->message->forward_from_message_id)){
+                    if(isset($msg->message->forward_date)){
                         $result[$botAccount['name']."(".$botAccount['id'].")"]["Jacky"]["msgs"][] = [
                             "msg" => $tmpData
                         ];
@@ -289,6 +289,79 @@ try {
                     }
                     // 發送訊息
                     sendMediaGroup($file['botAccount'][0]['accountToken'], $file['adminAccount']['jacky']['traget_chat_id'], $medias);
+                }
+            }
+
+            // 處理Ming的轉發訊息
+            if($adminKey == "Ming"){
+                foreach($adminAccount['msgs'] as $msg){
+                    $medias = [];
+                    if(isset($msg['msg']['photo'])){
+                        $medias[] = [
+                            "type" => "photo",
+                            "media" => $msg['msg']['photo'][0]->file_id,
+                            "caption" => $msg['msg']['caption']??null,
+                        ];
+                    }
+                    if(isset($msg['msg']['document'])){
+                        $medias[] = [
+                            "type" => "document",
+                            "media" => $msg['msg']['document']->file_id,
+                            "caption" => $msg['msg']['caption']??null,
+                        ];
+                    }
+                    if(isset($msg['msg']['video'])){
+                        $medias[] = [
+                            "type" => "video",
+                            "media" => $msg['msg']['video']->file_id,
+                            "caption" => $msg['msg']['caption']??null,
+                        ];
+                    }
+                    if(isset($msg['msg']['voice'])){
+                        $medias[] = [
+                            "type" => "voice",
+                            "media" => $msg['msg']['voice']->file_id,
+                            "caption" => $msg['msg']['caption']??null,
+                        ];
+                    }
+                    // 發送訊息
+                    sendMediaGroup($file['botAccount'][0]['accountToken'], $file['adminAccount']['Ming']['traget_chat_id'], $medias);
+                }
+
+                foreach ($adminAccount['gruoup'] as $groupKey => $group){
+                    $medias = [];
+                    foreach ($group as $msg){
+                        if(isset($msg['msg']['photo'])){
+                            $medias[] = [
+                                "type" => "photo",
+                                "media" => $msg['msg']['photo'][0]->file_id,
+                                "caption" => $msg['msg']['caption']??null,
+                            ];
+                        }
+                        if(isset($msg['msg']['document'])){
+                            $medias[] = [
+                                "type" => "document",
+                                "media" => $msg['msg']['document']->file_id,
+                                "caption" => $msg['msg']['caption']??null,
+                            ];
+                        }
+                        if(isset($msg['msg']['video'])){
+                            $medias[] = [
+                                "type" => "video",
+                                "media" => $msg['msg']['video']->file_id,
+                                "caption" => $msg['msg']['caption']??null,
+                            ];
+                        }
+                        if(isset($msg['msg']['voice'])){
+                            $medias[] = [
+                                "type" => "voice",
+                                "media" => $msg['msg']['voice']->file_id,
+                                "caption" => $msg['msg']['caption']??null,
+                            ];
+                        }
+                    }
+                    // 發送訊息
+                    sendMediaGroup($file['botAccount'][0]['accountToken'], $file['adminAccount']['Ming']['traget_chat_id'], $medias);
                 }
             }
         }
